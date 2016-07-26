@@ -12,6 +12,13 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.awt.BorderLayout;
 import javax.swing.JMenuBar;
@@ -72,26 +79,123 @@ public class Activity {
 		
 		textArea = new JTextArea();
 		frame.getContentPane().add(textArea, BorderLayout.CENTER);
-	}
-	
-	private void OpenActionPerformed(java.awt.event.ActionEvent evt) {
-	    int returnVal = xmlFileChooser.showOpenDialog(mnArquivo);
+		
+		int returnVal = xmlFileChooser.showOpenDialog(mnArquivo);
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
-	        File file = xmlFileChooser.getSelectedFile();
-	        SAXBuilder sb = new SAXBuilder();
-
-	        file.
 	        
 	        try {
-	          // What to do with the file, e.g. display it in a TextArea
-	          //textarea.read( new FileReader( file.getAbsolutePath() ), null );
-	        
-	        } catch (IOException ex) {
-	          System.out.println("problem accessing file"+file.getAbsolutePath());
-	        }
+	        	File XmlFile = xmlFileChooser.getSelectedFile();
+	        	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        	Document doc = dBuilder.parse(XmlFile);
+	        			
+	        	//optional, but recommended
+	        	//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+	        	doc.getDocumentElement().normalize();
+
+	        	//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+	        	textArea.setText("conceito | disciplina | codigo | creditos | categoria | situacao | periodo | ano\n");
+	        	System.out.println("conceito | disciplina | codigo | creditos | categoria | situacao | periodo | ano");
+	        			
+	        	NodeList nList = doc.getElementsByTagName("Disciplina");
+	        			
+	        	System.out.println("----------------------------");
+
+	        	for (int temp = 0; temp < nList.getLength(); temp++) {
+
+	        		Node nNode = nList.item(temp);
+	        				
+	        		//System.out.println("\nCurrent Element :" + nNode.getNodeName());
+	        				
+	        		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+	        			Element eElement = (Element) nNode;
+
+	        			/*System.out.println("Staff id : " + eElement.getAttribute("id"));
+	        			System.out.println("First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
+	        			System.out.println("Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
+	        			System.out.println("Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
+	        			System.out.println("Salary : " + eElement.getElementsByTagName("salary").item(0).getTextContent());*/
+	        			textArea.setText(eElement.getElementsByTagName("codigo").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("disciplina").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("creditos").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("conceito").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("situacao").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("categoria").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("periodo").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("ano").item(0).getTextContent()+"\n");
+	        			System.out.println(eElement.getElementsByTagName("codigo").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("disciplina").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("creditos").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("conceito").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("situacao").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("categoria").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("periodo").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("ano").item(0).getTextContent());
+
+	        		}
+	        	}
+	            } catch (Exception e) {
+	        	e.printStackTrace();
+	            }
 	    } else {
 	        System.out.println("File access cancelled by user.");
 	    }
-	} 
+	}
+	
+	/*private void OpenActionPerformed(java.awt.event.ActionEvent evt) {
+	    int returnVal = xmlFileChooser.showOpenDialog(mnArquivo);
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+	        
+	        try {
+	        	File XmlFile = xmlFileChooser.getSelectedFile();
+	        	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        	Document doc = dBuilder.parse(XmlFile);
+	        			
+	        	//optional, but recommended
+	        	//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+	        	doc.getDocumentElement().normalize();
+
+	        	//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+	        	System.out.println("conceito | disciplina | codigo | creditos | categoria | situacao | periodo | ano");
+	        			
+	        	NodeList nList = doc.getElementsByTagName("Disciplina");
+	        			
+	        	System.out.println("----------------------------");
+
+	        	for (int temp = 0; temp < nList.getLength(); temp++) {
+
+	        		Node nNode = nList.item(temp);
+	        				
+	        		//System.out.println("\nCurrent Element :" + nNode.getNodeName());
+	        				
+	        		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+	        			Element eElement = (Element) nNode;
+
+	        			/*System.out.println("Staff id : " + eElement.getAttribute("id"));
+	        			System.out.println("First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
+	        			System.out.println("Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
+	        			System.out.println("Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
+	        			System.out.println("Salary : " + eElement.getElementsByTagName("salary").item(0).getTextContent());
+	        			System.out.println(eElement.getElementsByTagName("codigo").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("disciplina").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("creditos").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("conceito").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("situacao").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("categoria").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("periodo").item(0).getTextContent()+
+	        					" | "+eElement.getElementsByTagName("ano").item(0).getTextContent());
+
+	        		}
+	        	}
+	            } catch (Exception e) {
+	        	e.printStackTrace();
+	            }
+	    } else {
+	        System.out.println("File access cancelled by user.");
+	    }
+	} */
 
 }
